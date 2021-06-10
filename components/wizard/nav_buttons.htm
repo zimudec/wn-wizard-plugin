@@ -7,11 +7,11 @@
     {% endif %}
   {% endif %}
   
-  {% if noform %}
-    {% if wizard.stepNext %}
-    <a class="btn btn-primary" href="{{ wizard.stepNext }}">Next</a>
+  {% if wizard.stepNext %}
+    {% if noform %}
+      <a class="btn btn-primary" href="{{ wizard.stepNext }}">Next</a>
+    {% else %}
+    <button type="submit" class="btn btn-primary" data-attach-loading>Next</button>
     {% endif %}
-  {% else %}
-  <button type="submit" class="btn btn-primary" data-attach-loading>Next</button>
   {% endif %}
 </div>
