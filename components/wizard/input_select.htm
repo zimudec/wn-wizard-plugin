@@ -1,0 +1,10 @@
+<div class="form-group">
+  <label for="{{ name }}">{{ label }}</label>
+  <select class="form-control" id="{{ name }}" name="{{ name }}">
+    <option value="">{% if itemDefault %}{{ itemDefault }}{% else %}Select...{% endif %}</option>
+    {% for item in items %}
+    <option value="{{ item.id }}">{{ item.name }}</option>
+    {% endfor %}
+  </select>
+  <div data-validate-for="{{ name }}" class="invalid-feedback"></div>
+</div>

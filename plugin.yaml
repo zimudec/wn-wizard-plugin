@@ -1,0 +1,6 @@
+plugin:
+    name: 'zimudec.wizard::lang.plugin.name'
+    description: 'zimudec.wizard::lang.plugin.description'
+    author: zimudec
+    icon: oc-icon-ellipsis-h
+    homepage: ''

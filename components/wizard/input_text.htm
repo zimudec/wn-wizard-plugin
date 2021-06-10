@@ -1,0 +1,5 @@
+<div class="form-group">
+  <label for="{{ name }}">{{ label }}</label>
+  <input type="text" id="{{ name }}" name="{{ name }}" value="{{ value }}" class="form-control" {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %} {% if readonly %}readonly{% endif %}>
+  <div data-validate-for="{{ name }}" class="invalid-feedback"></div>
+</div>

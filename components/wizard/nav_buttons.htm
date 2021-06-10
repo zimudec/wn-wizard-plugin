@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-end">
+  {% if wizard.stepPrev %}
+    {% if not wizard.stepNext %}
+    <a class="btn btn-primary" href="{{ url('/') }}">Finish</a>
+    {% else %}
+    <a class="btn btn-secondary mr-3" href="{{ wizard.stepPrev }}">Previous</a>
+    {% endif %}
+  {% endif %}
+  
+  {% if noform %}
+    {% if wizard.stepNext %}
+    <a class="btn btn-primary" href="{{ wizard.stepNext }}">Next</a>
+    {% endif %}
+  {% else %}
+  <button type="submit" class="btn btn-primary" data-attach-loading>Next</button>
+  {% endif %}
+</div>

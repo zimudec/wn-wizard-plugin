@@ -1,0 +1,26 @@
+{
+  "name": "zimudec/wn-wizard-plugin",
+  "type": "winter-plugin",
+  "description": "Wizard plugin for Winter CMS",
+  "homepage": "https://github.com/zimudec/wn-wizard-plugin",
+  "keywords": ["winter", "wintercms", "wizard", "steps", "forms", "validations"],
+  "license": "MIT",
+  "authors": [
+      {
+          "name": "Héctor Pavez",
+          "email": "hectzimudec@gmail.com",
+          "role": "Original Author"
+      }
+  ],
+  "support": {
+      "issues": "https://github.com/zimudec/wn-wizard-plugin/issues",
+      "source": "https://github.com/zimudec/wn-wizard-plugin"
+  },
+  "require": {
+      "php": ">=7.0",
+      "composer/installers": "~1.0"
+  },
+  "extra": {
+      "installer-name": "wizard"
+  }
+}
