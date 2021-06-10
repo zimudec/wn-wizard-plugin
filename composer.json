@@ -22,5 +22,11 @@
   },
   "extra": {
       "installer-name": "wizard"
-  }
+  },
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/zimudec/wn-wizard-plugin"
+    }
+  ]
 }
