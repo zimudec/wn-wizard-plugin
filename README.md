@@ -2,6 +2,8 @@
 
 Plugin that allows you to easily implement and configure a wizard system of steps with forms and validations to [Winter CMS](https://wintercms.com)
 
+![wizard_example](https://user-images.githubusercontent.com/491835/121741023-ec814a00-cacb-11eb-902e-1b01b5f2a0e3.png)
+
 ## Installation
 
 ```terminal
@@ -138,7 +140,7 @@ function onStep3()
   {% if wizard.stepCurrent == 'step1' %}
 
   <div class="text-center">{{ example_data }}</div>
-  <form class="limited_container3 mx-auto" data-request="onStep1" data-request-validate>
+  <form class="mx-auto" style="max-width: 400px;" data-request="onStep1" data-request-validate>
     {{ form_token() }}
 
     {% partial '@input_text.htm' label="Field 1 *" name="field1" %}
@@ -151,7 +153,7 @@ function onStep3()
   {% elseif wizard.stepCurrent == 'step2' %}
 
   {% partial '@header.htm' text=('Welcome ' ~ user.names) subtitle='This step does not require entering fields' %}
-  <form class="limited_container3 mx-auto" data-request="onStep1" data-request-validate>
+  <form class="mx-auto" style="max-width: 400px;" data-request="onStep1" data-request-validate>
     {{ form_token() }}
     {% partial '@input_text.htm' label="Field 2" value=(field2) readonly=true %}
     {% partial '@input_text.htm' label="Field 3" value=(field3) readonly=true %}
@@ -161,7 +163,7 @@ function onStep3()
   {% elseif wizard.stepCurrent == 'step3' %}
 
   {% partial '@header.htm' subtitle='This is the last step before finish the wizard' %}
-  <form class="limited_container3 mx-auto" data-request="onStep2" data-request-validate>
+  <form class="mx-auto" style="max-width: 400px;" data-request="onStep2" data-request-validate>
     {{ form_token() }}
 
     {% partial '@input_select.htm' label="Select *" name="select" items=(selectData)  %}

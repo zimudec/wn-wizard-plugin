@@ -1,7 +1,7 @@
-<ul class="nav nav-tabs mb-2">
+<ul class="nav nav-tabs border-bottom border-success mb-2">
 {% for step in wizard.steps %}
   <li class="nav-item">
-    <a class="nav-link {% if step.step == this.param.step %}active bg-success text-white{% else %}disabled{% endif %}">{{ step.name }}</a>
+    <a class="nav-link {% if step.step == this.param.step %}active bg-success text-white{% else %}disabled{% endif %}" {% if step.step == this.param.step %}style="background-color: var(--success); border-color: transparent transparent var(--success);"{% endif %}>{{ step.name }}</a>
   </li>
 {% endfor %}
 </ul>
