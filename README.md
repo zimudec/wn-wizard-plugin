@@ -63,7 +63,7 @@ function onInit()
     // This is useful when you need to update the data obtained from extra validations.
     ['step' => 'step2', 'name' => 'Step 2', 'validatePrevSteps' => true],
     ['step' => 'step3', 'name' => 'Step 3', 'forms' => [
-      'onStep2' => [
+      'onStep3' => [
         'validation' => ['select' => 'required'],
         'extra_validation' => function($validator, $fields, $prevValidationsData){
         }
@@ -153,7 +153,7 @@ function onStep3()
   {% elseif wizard.stepCurrent == 'step2' %}
 
   {% partial '@header.htm' text=('Welcome ' ~ user.names) subtitle='This step does not require entering fields' %}
-  <form class="mx-auto" style="max-width: 400px;" data-request="onStep1" data-request-validate>
+  <form class="mx-auto" style="max-width: 400px;" data-request="onStep2" data-request-validate>
     {{ form_token() }}
     {% partial '@input_text.htm' label="Field 2" value=(field2) readonly=true %}
     {% partial '@input_text.htm' label="Field 3" value=(field3) readonly=true %}
@@ -163,7 +163,7 @@ function onStep3()
   {% elseif wizard.stepCurrent == 'step3' %}
 
   {% partial '@header.htm' subtitle='This is the last step before finish the wizard' %}
-  <form class="mx-auto" style="max-width: 400px;" data-request="onStep2" data-request-validate>
+  <form class="mx-auto" style="max-width: 400px;" data-request="onStep3" data-request-validate>
     {{ form_token() }}
 
     {% partial '@input_select.htm' label="Select *" name="select" items=(selectData)  %}
