@@ -1,6 +1,4 @@
-<?php
-
-namespace Zimudec\Wizard;
+<?php namespace Zimudec\Wizard;
 
 use System\Classes\PluginBase;
 
