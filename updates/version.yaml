@@ -4,3 +4,7 @@
     - Fix.
 1.0.3:
     - Fix example page code.
+1.0.4:
+    - Add custom validation messages.
+    - Add current step name to wizard.
+    - PSR fix.
