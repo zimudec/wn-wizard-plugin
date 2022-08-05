@@ -104,6 +104,9 @@ function onEnd()
       ['id' => 3, 'name' => 'Name 3'],
     ];
   }
+
+  // Set page title
+  $this->page->title = $this->page->title . ' - '. $wizard['stepCurrentName'];
 }
 
 function onStep1()

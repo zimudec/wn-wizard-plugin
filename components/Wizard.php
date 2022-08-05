@@ -284,6 +284,8 @@ class Wizard extends ComponentBase
                         ['step' => $this->steps[$key - 1]['step']]
                     );
                 }
+                
+                $wizardData['stepCurrentName'] = $this->steps[$key]['name'];
                 break;
             }
 
