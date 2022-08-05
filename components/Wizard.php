@@ -34,11 +34,11 @@ class Wizard extends ComponentBase
         return null;
     }
 
-    public function formValidate($requestData, $validationFields, $validationExtras)
+    public function formValidate($requestData, $validationFields, $validationMessages, $validationExtras)
     {
         $resp = [];
 
-        $validator = Validator::make($requestData, $validationFields);
+        $validator = Validator::make($requestData, $validationFields, $validationMessages);
 
         foreach ($validationExtras as $validationExtra) {
             $validator->after(function ($validator) use ($validationExtra, $requestData, &$resp) {
@@ -117,7 +117,11 @@ class Wizard extends ComponentBase
 
                 $requestData = request()->all();
 
-                $validator = Validator::make($requestData, $formStep['validation']);
+                $validator = Validator::make(
+                    $requestData,
+                    $formStep['validation'],
+                    array_get($formStep, 'validation_messages', [])
+                );
 
                 if (isset($formStep['extra_validation'])) {
                     $validator->after(function ($validator) use ($formStep, &$resp, $requestData) {
@@ -162,8 +166,9 @@ class Wizard extends ComponentBase
 
     public function stepValidate()
     {
-        $validationFields = [];
-        $validationExtras = [];
+        $validationFields   = [];
+        $validationMessages = [];
+        $validationExtras   = [];
 
         // Validate if the data from the previous steps is correct
         foreach ($this->steps as $stepPos => $step) {
@@ -178,6 +183,9 @@ class Wizard extends ComponentBase
                     if (isset($formStep['validation'])) {
                         $validationFields = array_merge($validationFields, $formStep['validation']);
                     }
+                    if (isset($formStep['validation_messages'])) {
+                        $validationMessages = array_merge($validationMessages, $formStep['validation_messages']);
+                    }
                     if (isset($formStep['extra_validation'])) {
                         $validationExtras[] = $formStep['extra_validation'];
                     }
@@ -185,7 +193,12 @@ class Wizard extends ComponentBase
             }
         }
 
-        $dataExtra = $this->formValidate(session()->get('wizard_steps', []), $validationFields, $validationExtras);
+        $dataExtra = $this->formValidate(
+            session()->get('wizard_steps', []),
+            $validationFields,
+            $validationMessages,
+            $validationExtras
+        );
 
         if ($dataExtra === false) {
             // Fails. Redirect to step 1
@@ -241,6 +254,7 @@ class Wizard extends ComponentBase
             if ($step['step'] == $wizardData['stepCurrent']) {
                 // Validate if it is allowed to enter the step, according to the data of the previous steps
                 $wizardSession = session()->get('wizard_steps', []);
+                // dd($wizardSession);
                 $stepValid = 0;
                 if (count($wizardSession) > 0 && isset($wizardSession['stepCurrent'])) {
                     $stepValid = $wizardSession['stepCurrent'];
@@ -272,6 +286,7 @@ class Wizard extends ComponentBase
                 }
                 break;
             }
+
         }
 
         $wizardData['steps'] = $this->steps;
