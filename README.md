@@ -65,6 +65,9 @@ function onInit()
     ['step' => 'step3', 'name' => 'Step 3', 'forms' => [
       'onStep3' => [
         'validation' => ['select' => 'required'],
+        'validation_messages' => [
+          'select.required' => 'You must choose a value for :attribute field!'
+        ],
         'extra_validation' => function($validator, $fields, $prevValidationsData){
         }
       ]
@@ -101,6 +104,9 @@ function onEnd()
       ['id' => 3, 'name' => 'Name 3'],
     ];
   }
+
+  // Set page title
+  $this->page->title = $this->page->title . ' - '. $wizard['stepCurrentName'];
 }
 
 function onStep1()
