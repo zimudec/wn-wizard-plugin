@@ -185,3 +185,50 @@ function onStep3()
   {% endif %}
 </section>
 ```
+
+### Using translated customs error messages
+
+When you define your steps, it is also possible to define custom error messages associated with your validations by using `validation_messages` key.  
+
+```php
+$this->wizard->steps = [
+  [
+    'step' => 'step1',
+    'name' => 'Step 1',
+    'forms' => [
+      'onStep1' => [
+        'validation' => ['myField' => 'required'],
+        'validation_messages' => [
+          'myField.required' => 'You must choose a value for :attribute field!'
+        ],
+        'extra_validation' => function($validator, $fields, $prevValidationsData){}
+      ]
+    ]
+  ],
+  // ...
+]
+```
+If you need to get these messages in different languages, you can use per-language files.  
+For example, you can create a file per language, in the dedicated directory `./lang/[language key]/zimudec/wizard/validations.php`, containing the messages définitions.
+```php
+// ./lang/en/zimudec/wizard/validations.php
+<?php
+
+return [
+    'myField_required' => 'You must choose a value for :attribute field!',
+];
+
+// ./lang/fr/zimudec/wizard/validations.php
+<?php
+
+return [
+    'myField_required' => 'Vous devez choisir une valeur pour le champ :attribute !',
+];
+```
+And then reference those definitions in your steps : 
+```php
+  'validation_messages' => [
+    'myField.required' => Lang::get('zimudec.wizard::validations.myField_required')
+  ],
+```
+If you need to learn more about validation in Winter CMS, check the documentation for [Services/validation](https://wintercms.com/docs/services/validation).
