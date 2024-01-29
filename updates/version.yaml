@@ -11,3 +11,13 @@
     - Add custom validation messages.
     - Add current step name to wizard.
     - PSR fix.
+1.0.6:
+    - Adjustments validating previous steps in the final step
+    - When detecting validation problems from previous steps in an ajax request, redirect correctly to step 1
+    - If the session is lost, it is immediately redirected to step 1, without validating anything
+    - When changing pages and being in step 2 or higher, return to step 1, for safety
+    - If you try to enter a section that does not exist, you will be redirected to step 1
+    - If incorrect step is loaded, returns last valid step
+    - Calculations made in runtime validation are reused, for performance
+    - Extra data can be saved in session, from anywhere in the system
+    - Each wizard has their own session, to prevent one from stepping on the other
