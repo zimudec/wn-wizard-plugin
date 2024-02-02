@@ -21,3 +21,5 @@
     - Calculations made in runtime validation are reused, for performance
     - Extra data can be saved in session, from anywhere in the system
     - Each wizard has their own session, to prevent one from stepping on the other
+1.0.7:
+    - Correction overwriting session from extra_validation, when revalidating all previous steps

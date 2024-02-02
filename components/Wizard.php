@@ -44,12 +44,12 @@ class Wizard extends ComponentBase
             $validator->after(function ($validator) use ($validationExtra, $requestData, &$resp) {
                 $result = $validationExtra($validator, $requestData, $resp);
 
-                /* if (is_array($result)) {
-                $resp = array_merge($resp, $result);
-                } */
+                if (is_array($result)) {
+                    $resp = array_merge($resp, $result);
+                }
 
                 $session = session()->get($this->sessionNameGet(), []);
-                $resp = array_merge($resp, $session['validations']);
+                $resp = array_merge($session['validations'], $resp);
             });
         }
 
@@ -333,8 +333,8 @@ class Wizard extends ComponentBase
                 }
 
                 $dataExtra = $validatePrevSteps
-                ? $this->stepValidate()
-                : (isset($wizardSession['validations']) ? $wizardSession['validations'] : []);
+                    ? $this->stepValidate()
+                    : (isset($wizardSession['validations']) ? $wizardSession['validations'] : []);
 
                 $this->stepPos = $key;
 
