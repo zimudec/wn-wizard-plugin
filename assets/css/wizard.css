@@ -1,0 +1,379 @@
+/* zimudec/wizard — framework-neutral styles for the wizard component.
+   The markup stays semantic; this stylesheet provides the default look of
+   the wizard (Bootstrap 5-aligned: form-control fields, nav-tabs steps,
+   .btn actions, .invalid-feedback errors) without requiring Bootstrap or
+   any other framework in the theme.
+
+   Every rule lives inside the "wizard" cascade layer: any stylesheet of the
+   theme (not inside a layer) always wins over these rules, without
+   !important. Themes may also retune the look through the --wizard-* custom
+   properties below, replace the partials, or disable this stylesheet with
+   the "css" property of the component.
+
+   Light/dark palettes use the CSS light-dark() function driven by
+   color-scheme (Baseline 2024); older engines fall back to a
+   prefers-color-scheme block. */
+
+@layer wizard {
+    /* Form-level error container: business rules without a field in the
+       DOM ("select at least one", cross-field checks) paint here. */
+    .wizard__form-error {
+        margin-bottom: var(--wizard-gap);
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--wizard-danger);
+        border-radius: var(--wizard-radius);
+        background: color-mix(in srgb, var(--wizard-danger) 8%, var(--wizard-surface));
+        color: var(--wizard-danger);
+    }
+
+    .wizard__form-error[hidden] {
+        display: none;
+    }
+
+    .wizard__form-error:focus-visible {
+        outline: 2px solid var(--wizard-danger);
+        outline-offset: 2px;
+    }
+
+    .wizard__form-error__title {
+        margin: 0 0 0.25rem;
+        font-weight: 600;
+    }
+
+    .wizard__form-error__list p {
+        margin: 0.25rem 0 0;
+    }
+
+
+    .wizard {
+        color-scheme: light dark;
+    }
+
+    :where(.wizard) {
+        --wizard-max-width: 42rem;
+        --wizard-accent: light-dark(#0d6efd, #6ea8fe);
+        --wizard-accent-contrast: light-dark(#fff, #10131a);
+        --wizard-accent-hover: light-dark(#0b5ed7, #8cabf9);
+        --wizard-accent-focus: light-dark(#86b7fe, #6ea8fe);
+        --wizard-secondary: light-dark(#6c757d, #6c757d);
+        --wizard-secondary-hover: light-dark(#5c636a, #6c757d);
+        --wizard-success: light-dark(#198754, #47b172);
+        --wizard-danger: light-dark(#dc3545, #ea868f);
+        --wizard-border: light-dark(#d0d7de, #495057);
+        --wizard-input-border: light-dark(#ced4da, #495057);
+        --wizard-text: light-dark(#212529, #e6e8ee);
+        --wizard-text-muted: light-dark(#6c757d, #adb5bd);
+        --wizard-surface: light-dark(#fff, #171a21);
+        --wizard-surface-alt: light-dark(#f8f9fa, #1f232c);
+        --wizard-radius: 0.375rem;
+        --wizard-gap: 1rem;
+        --wizard-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    /* Fallback for engines without light-dark(). */
+    @supports not (color: light-dark(#fff, #000)) {
+        :where(.wizard) {
+            --wizard-accent: #0d6efd;
+            --wizard-accent-contrast: #fff;
+            --wizard-accent-hover: #0b5ed7;
+            --wizard-accent-focus: #86b7fe;
+            --wizard-secondary: #6c757d;
+            --wizard-secondary-hover: #5c636a;
+            --wizard-success: #198754;
+            --wizard-danger: #dc3545;
+            --wizard-border: #d0d7de;
+            --wizard-input-border: #ced4da;
+            --wizard-text: #212529;
+            --wizard-text-muted: #6c757d;
+            --wizard-surface: #fff;
+            --wizard-surface-alt: #f8f9fa;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :where(.wizard) {
+                --wizard-accent: #6ea8fe;
+                --wizard-accent-contrast: #10131a;
+                --wizard-accent-hover: #8cabf9;
+                --wizard-accent-focus: #6ea8fe;
+                --wizard-secondary: #6c757d;
+                --wizard-secondary-hover: #6c757d;
+                --wizard-success: #47b172;
+                --wizard-danger: #ea868f;
+                --wizard-border: #495057;
+                --wizard-input-border: #495057;
+                --wizard-text: #e6e8ee;
+                --wizard-text-muted: #adb5bd;
+                --wizard-surface: #171a21;
+                --wizard-surface-alt: #1f232c;
+            }
+        }
+    }
+
+    /* Step shell: card with a subtle border and shadow */
+    .wizard {
+        max-width: var(--wizard-max-width);
+        margin-inline: auto;
+        padding: 1.5rem;
+        border: 1px solid var(--wizard-border);
+        border-radius: var(--wizard-radius);
+        background: var(--wizard-surface);
+        box-shadow: var(--wizard-shadow);
+        color: var(--wizard-text);
+    }
+
+    /* Step indicator: nav-tabs look, no numbering; a checkmark marks
+       completed steps. */
+    .wizard__nav {
+        margin-block-end: var(--wizard-gap);
+    }
+
+    .wizard__nav-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-bottom: 1px solid var(--wizard-border);
+    }
+
+    .wizard__nav-item {
+        flex: 1 1 auto;
+        min-width: 6rem;
+        padding: 0.5rem 1rem;
+        margin-block-end: -1px;
+        border: 1px solid transparent;
+        border-radius: var(--wizard-radius) var(--wizard-radius) 0 0;
+        background: transparent;
+        color: var(--wizard-text-muted);
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.5;
+        text-wrap: balance;
+        transition: color 150ms ease-in-out, background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+    }
+
+    .wizard__nav-item--completed {
+        color: var(--wizard-success);
+    }
+
+    .wizard__nav-item--completed::before {
+        content: "\2713\00a0";
+    }
+
+    .wizard__nav-item--current {
+        color: var(--wizard-accent);
+        background: var(--wizard-surface);
+        border-color: transparent;
+        border-bottom: 2px solid var(--wizard-accent);
+        font-weight: 600;
+    }
+
+    .wizard__nav-item--pending:hover {
+        color: var(--wizard-text-muted);
+        background: var(--wizard-surface-alt);
+    }
+
+    .wizard__nav-item a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+
+    .wizard__nav-label {
+        display: inline;
+    }
+
+    /* Screen-reader-only text (state labels of the step indicator) */
+    .wizard__sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Step title */
+    .wizard__title {
+        margin-block: 0 var(--wizard-gap);
+        font-size: 1.5rem;
+        font-weight: 600;
+        line-height: 1.3;
+        text-wrap: balance;
+    }
+
+    /* Fields — Bootstrap form rhythm: label margin-bottom .5rem (form-label),
+       1rem between groups (mb-3), feedback margin-top .25rem (.invalid-feedback). */
+    .wizard__form {
+        display: grid;
+        gap: var(--wizard-gap);
+    }
+
+    .wizard__field {
+        display: grid;
+        gap: 0;
+    }
+
+    .wizard__label {
+        margin-block-end: 0.5rem;
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .wizard__input,
+    .wizard__select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid var(--wizard-input-border);
+        border-radius: var(--wizard-radius);
+        background: var(--wizard-surface);
+        color: var(--wizard-text);
+        font: inherit;
+        line-height: 1.5;
+        background-clip: padding-box;
+        transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+    }
+
+    .wizard__input:focus-visible,
+    .wizard__select:focus-visible {
+        outline: none;
+        border-color: var(--wizard-accent-focus);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wizard-accent) 25%, transparent);
+    }
+
+    /* Custom select arrow (form-select pattern); the SVG carries explicit
+       intrinsic dimensions (some engines refuse dimension-less SVG data
+       URIs) and a muted arrow that works on both color schemes. */
+    .wizard__select {
+        appearance: none;
+        padding-inline-end: 2.25rem;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    /* Error state of a control: painted through :has() when Snowboard
+       injects the message into the error bag of the field (Baseline
+       Widely available). */
+    .wizard__field:has(.wizard__error:not(:empty)) .wizard__input,
+    .wizard__field:has(.wizard__error:not(:empty)) .wizard__select {
+        border-color: var(--wizard-danger);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wizard-danger) 25%, transparent);
+    }
+
+    .wizard__field:has(.wizard__error:not(:empty)) .wizard__input:focus-visible,
+    .wizard__field:has(.wizard__error:not(:empty)) .wizard__select:focus-visible {
+        border-color: var(--wizard-danger);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wizard-danger) 25%, transparent);
+    }
+
+    .wizard__error {
+        display: none;
+        width: 100%;
+        margin-block-start: 0.25rem;
+        color: var(--wizard-danger);
+        font-size: 0.875em;
+    }
+
+    .wizard__error:not(:empty) {
+        display: block;
+    }
+
+    /* Buttons — .btn metrics */
+    .wizard__buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+        margin-block-start: var(--wizard-gap);
+    }
+
+    .wizard__button {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid var(--wizard-accent);
+        border-radius: var(--wizard-radius);
+        background: var(--wizard-accent);
+        color: var(--wizard-accent-contrast);
+        font: inherit;
+        font-weight: 400;
+        line-height: 1.5;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 150ms ease-in-out, background-color 150ms ease-in-out,
+            border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+    }
+
+    .wizard__button:hover {
+        background: var(--wizard-accent-hover);
+        border-color: var(--wizard-accent-hover);
+    }
+
+    .wizard__button:focus-visible {
+        outline: none;
+        border-color: var(--wizard-accent-focus);
+        box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wizard-accent) 25%, transparent);
+    }
+
+    .wizard__button--prev {
+        margin-inline-end: auto;
+        background: var(--wizard-secondary);
+        border-color: var(--wizard-secondary);
+        color: var(--wizard-accent-contrast);
+    }
+
+    .wizard__button--prev:hover {
+        background: var(--wizard-secondary-hover);
+        border-color: var(--wizard-secondary-hover);
+    }
+
+    /* Pending state of a submit button while its AJAX request is in flight
+       (data-attach-loading, Snowboard). The button stays enabled and
+       focusable — disabled controls are not announced and do not say why
+       they cannot be used; the form carries aria-busy and the second
+       submission is ignored by the built-in guard. */
+    .wn-loading {
+        opacity: 0.75;
+        pointer-events: none;
+    }
+
+    .wn-loading::after {
+        content: "";
+        display: inline-block;
+        width: 0.75em;
+        height: 0.75em;
+        margin-inline-start: 0.5em;
+        border: 2px solid currentColor;
+        border-block-start-color: transparent;
+        border-radius: 50%;
+        vertical-align: -0.125em;
+        animation: wizard-spin 700ms linear infinite;
+    }
+
+    @keyframes wizard-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .wizard__button,
+        .wizard__input,
+        .wizard__select,
+        .wizard__nav-item {
+            transition: none;
+        }
+
+        .wn-loading::after {
+            animation: none;
+        }
+    }
+}

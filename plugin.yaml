@@ -3,4 +3,4 @@ plugin:
     description: 'zimudec.wizard::lang.plugin.description'
     author: zimudec
     icon: oc-icon-ellipsis-h
-    homepage: ''
+    homepage: 'https://github.com/zimudec/wn-wizard-plugin'
