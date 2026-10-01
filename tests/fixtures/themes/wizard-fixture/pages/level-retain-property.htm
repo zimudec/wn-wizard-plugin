@@ -1,0 +1,37 @@
+url = "/level-retain-property/:step?"
+title = "Level Retain Property"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+retainData = "1"
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    // The steps are declared with define(), and the wizard-wide settings are
+    // NOT declared in the builder: they must fall back to the component
+    // property above. Before round 42 this property was read by nothing.
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([['name' => 'field1', 'label' => 'Field 1']])
+            ->rules(['field1' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([['name' => 'field2', 'label' => 'Field 2']])
+            ->rules(['field2' => 'required'])
+            ->end()
+
+            ->step('step-3', 'Step 3')
+            ->fields([['name' => 'field3', 'label' => 'Field 3']])
+            ->rules(['field3' => 'required'])
+            ->end();
+    });
+}
+?>
+==
+{% component 'wizard' %}

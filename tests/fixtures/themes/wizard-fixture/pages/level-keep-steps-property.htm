@@ -1,0 +1,12 @@
+url = "/level-keep-steps-property/:step?"
+title = "Level Keep Steps Property"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+steps = "step-1|step-2|step-3"
+titles = "Step 1|Step 2|Step 3"
+fields = "field1"
+keepSteps = "step-2"
+==
+{% component 'wizard' %}

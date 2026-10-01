@@ -1,0 +1,4 @@
+name: Wizard Override Fixture
+description: Fixture theme that overrides the wizard partials to test the theme override convention
+author: zimudec
+code: wizard-override-fixture

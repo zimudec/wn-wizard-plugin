@@ -1,0 +1,149 @@
+url = "/level-api/:step?"
+title = "Programmatic API"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([
+                ['name' => 'field1', 'label' => 'Field 1'],
+            ])
+            ->rules(['field1' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([
+                ['name' => 'field2', 'label' => 'Field 2'],
+            ])
+            ->rules(['field2' => 'required'])
+            ->end()
+
+            // A third step, so submitting step 2 does not finish the wizard
+            // (a finished wizard clears the session).
+            ->step('step-3', 'Step 3')
+            ->fields([
+                ['name' => 'field3', 'label' => 'Field 3'],
+            ])
+            ->rules(['field3' => 'required'])
+            ->end();
+    });
+}
+
+function onCartData()
+{
+    $this->wizard->saveData(['cart_total' => post('cart_total', 0)], 'step-1');
+
+    return [
+        'data' => $this->wizard->data(),
+        'stepCurrent' => $this->wizard->stepCurrent(),
+        'meta' => $this->wizard->meta(),
+    ];
+}
+
+/**
+ * Reproduces the case the wizard-shop sample hit: a handler writes a key to an
+ * EARLY step while a LATER step also stores that key, so the merged view
+ * resolves the key to the later step and the write looks like it did nothing.
+ * `stepData()` is the way to read back what you just wrote.
+ */
+function onShadowedWrite()
+{
+    $this->wizard->saveData(['shared' => post('value', 'written')], post('step', 'step-1'));
+
+    return [
+        'merged' => $this->wizard->data(),
+        'step1' => $this->wizard->stepData('step-1'),
+        'step2' => $this->wizard->stepData('step-2'),
+    ];
+}
+
+/**
+ * The v1 use case: the last step needs EVERY step's data to finish the order,
+ * with nothing merged away. stepsData() returns the per-step map, so two steps
+ * can hold the same key name without either hiding the other.
+ */
+function onAllSteps()
+{
+    return ['steps' => $this->wizard->stepsData()];
+}
+
+function onUnknownStepRead()
+{
+    return ['data' => $this->wizard->stepData('nope')];
+}
+
+function onBadSave()
+{
+    $this->wizard->saveData(['x' => 1], 'nope');
+}
+
+/**
+ * The rename case: a key the wizard stored under an old name is removed.
+ * Without a step code the key leaves every step.
+ */
+function onForget()
+{
+    $this->wizard->forgetData((array) post('keys', ['stale']), post('step') ?: null);
+
+    return [
+        'merged' => $this->wizard->data(),
+        'steps' => $this->wizard->stepsData(),
+    ];
+}
+
+function onForgetUnknownStep()
+{
+    $this->wizard->forgetData(['stale'], 'nope');
+}
+
+/**
+ * The handler guard: one call that both checks the step is reachable and
+ * returns the data, so the check cannot be separated from the read.
+ */
+function onRequire()
+{
+    $data = $this->wizard->requireData(post('step', 'step-2'), ['field2']);
+
+    if ($this->wizard->needsRedirect($data)) {
+        return $data;
+    }
+
+    return ['required' => $data];
+}
+
+function onRequireUnknownStep()
+{
+    return $this->wizard->requireData('nope');
+}
+
+/**
+ * The guard's own contract, exercised directly: the predicate has to answer
+ * for BOTH shapes requireData() returns. Calling a method on the array is a
+ * fatal error, so a predicate that only works on the response is unusable.
+ */
+function onGuardProbe()
+{
+    return [
+        'plain_array' => $this->wizard->needsRedirect(['totals' => 1]),
+        'empty_array' => $this->wizard->needsRedirect([]),
+        'response' => $this->wizard->needsRedirect(redirect('/level-api/step-1')),
+    ];
+}
+
+function onReset()
+{
+    $this->wizard->flush();
+}
+?>
+==
+{% component 'wizard' %}
+<span id="cart-total">{{ wizard.data.cart_total }}</span>
+<span id="step-num">{{ wizard.stepNumber }} of {{ wizard.steps|length }}</span>
