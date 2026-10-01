@@ -5,6 +5,8 @@ configuración, validación por paso y un almacén de sesión con la privacidad 
 paso de compilación, sin jQuery y sin Bootstrap: el framework sirve los assets con huella de
 contenido y la hoja de estilos vive en una capa en cascada que su tema puede sobrescribir.
 
+<img width="770" height="403" alt="Captura de pantalla_2026-09-30_23-23-43" src="https://github.com/user-attachments/assets/dc7282c1-f961-4cd2-86ae-50f0ca36d3f3" />
+
 ## Requisitos
 
 - PHP 8.2 o superior
