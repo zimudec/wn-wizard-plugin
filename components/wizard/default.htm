@@ -1,3 +1,34 @@
-<p>This is the default markup for component WizardSteps</p>
+{# Step shell. Override per theme at "partials/wizard/default.htm". #}
+{% set currentStep = wizard.steps | filter((step) => step.state == 'current') | first %}
+<div class="wizard">
+    {% partial '@nav.htm' %}
 
-<small>You can delete this file if you want</small>
+    {% if currentStep and currentStep.title != currentStep.code %}
+        <h2 class="wizard__title">{{ wizard.stepCurrentName }}</h2>
+    {% endif %}
+
+    <form class="wizard__form"
+          method="post"
+          data-request="{{ __SELF__ }}::onNext"
+          data-request-validate>
+
+        {{ form_token() }}
+        <input type="hidden" name="_handler" value="{{ __SELF__ }}::onNext">
+
+        {# Form-level error container: business rules without a field in the
+           DOM ("select at least one", cross-field checks) have no field bag,
+           so their messages land here. Painted by the plugin script; keys
+           with the underscore prefix are client control channels and are
+           never painted. #}
+        <div class="wizard__form-error" data-wizard-errors role="alert" tabindex="-1" hidden>
+            <p class="wizard__form-error__title">{{ 'zimudec.wizard::lang.errors.form_summary' | trans }}</p>
+            <div class="wizard__form-error__list" data-wizard-errors-list></div>
+        </div>
+
+        {% for field in __SELF__.currentStepFields() %}
+            {% partial '@field.htm' field=field value=array_get(wizard.data, field.name) %}
+        {% endfor %}
+
+        {% partial '@buttons.htm' %}
+    </form>
+</div>

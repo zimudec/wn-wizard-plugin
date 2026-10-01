@@ -1,0 +1,256 @@
+url = "/level-shop/:step?"
+title = "Checkout shop"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+/**
+ * A complete, generic four-step checkout that exercises every pattern of
+ * the plugin: declarative steps with derived data, auxiliary AJAX handlers
+ * (cart), a lookup with a control-channel error, deep-links with prefilled
+ * data, a conditional skip from a handler, a render guard and a keepData
+ * final step.
+ */
+
+function stores(): array
+{
+    return ['center' => 'Central store', 'north' => 'North store'];
+}
+
+function products(): array
+{
+    return ['widget' => 10, 'gadget' => 25];
+}
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->finishUrl('/level-shop-finish')
+            ->step('branch', 'Pick your store')
+            ->fields([
+                ['name' => 'store', 'type' => 'select', 'label' => 'Store', 'options' => $this->stores()],
+            ])
+            ->rules(['store' => 'required'])
+            ->extraValidation(function ($validator, $data) {
+                if (!isset($this->stores()[$data['store'] ?? ''])) {
+                    $validator->errors()->add('store', 'That store is not available');
+
+                    return;
+                }
+
+                return ['stores' => $this->stores()];
+            })
+            ->handler(function ($input, $data) {
+                // Express checkout (?express=1&product=gadget): the branch
+                // handler takes over the navigation and lands the user on
+                // the review step with the cart already computed. Skipping
+                // the step that produces the derived data means computing
+                // it here — a render guard checking the totals would
+                // otherwise bounce the target step back.
+                $product = get('product');
+
+                if (get('express') === '1' && isset($this->products()[$product])) {
+                    $price = $this->products()[$product];
+
+                    return $this->wizard->jumpTo('review', [
+                        'items' => [
+                            'quantity_' . $product => 1,
+                            'totals' => [
+                                'subtotal' => $price,
+                                'items' => [$product => ['quantity' => 1, 'price' => $price]],
+                            ],
+                        ],
+                    ], ['express' => '1']);
+                }
+            })
+            ->end()
+
+            ->step('items', 'Pick your products')
+            ->fields([
+                ['name' => 'quantity_widget', 'label' => 'Widgets'],
+                ['name' => 'quantity_gadget', 'label' => 'Gadgets'],
+            ])
+            ->rules([
+                // nullable: the field rules stay silent on empty input — the
+                // "at least one product" business rule below is the one that
+                // fails, on a key that has NO field in the DOM (the bug the
+                // form-level error container fixes).
+                'quantity_widget' => 'nullable|integer|min:0',
+                'quantity_gadget' => 'nullable|integer|min:0',
+            ])
+            ->extraValidation(function ($validator, $data) {
+                $prices = $this->products();
+
+                $widget = (int) ($data['quantity_widget'] ?? 0);
+                $gadget = (int) ($data['quantity_gadget'] ?? 0);
+
+                if ($widget + $gadget < 1) {
+                    // Business rule without a DOM field: it must surface in
+                    // the form-level error container, not be swallowed.
+                    $validator->errors()->add('bundles', 'Select at least one product');
+
+                    return;
+                }
+
+                $subtotal = $widget * $prices['widget']
+                    + $gadget * $prices['gadget'];
+
+                return ['totals' => [
+                    'subtotal' => $subtotal,
+                    'items' => [
+                        'widget' => ['quantity' => $widget, 'price' => $prices['widget']],
+                        'gadget' => ['quantity' => $gadget, 'price' => $prices['gadget']],
+                    ],
+                ]];
+            })
+            ->end()
+
+            ->step('buyer', 'Buyer details')
+            ->fields([
+                ['name' => 'name', 'label' => 'Full name'],
+                ['name' => 'email', 'label' => 'Email'],
+            ])
+            ->rules(['name' => 'required', 'email' => 'required|email'])
+            ->extraValidation(function ($validator, $data) {
+                // Simulated account lookup: a locked existing buyer is blocked.
+                if (($data['email'] ?? '') === 'locked@shop.test') {
+                    $validator->errors()->add('email', 'This account is locked. Contact support.');
+
+                    return;
+                }
+
+                $derived = ['buyer' => ['is_known' => ($data['email'] ?? '') === 'known@shop.test']];
+
+                // Control channel for the frontend: keys with the underscore
+                // prefix are consumed by the client JS and are NEVER painted
+                // in the form-level error container. Only rides when the
+                // step already failed.
+                if ($validator->errors()->any()) {
+                    $validator->errors()->add('_known_buyer', $derived['buyer']['is_known'] ? 1 : 0);
+                }
+
+                return $derived;
+            })
+            ->end()
+
+            ->step('review', 'Review and pay')
+            ->fields([
+                ['name' => 'payment_method', 'type' => 'select', 'label' => 'Payment method', 'options' => [
+                    'card' => 'Card',
+                    'transfer' => 'Transfer',
+                ]],
+                ['name' => 'terms', 'label' => 'I accept the terms'],
+            ])
+            ->rules(['payment_method' => 'required', 'terms' => 'required'])
+            ->commit(function ($input, $data) {
+                // Once-per-successful-submit side effect: place the order.
+                session(['shop_last_order' => [
+                    'buyer' => $data['buyer'] ?? [],
+                    'totals' => $data['totals'] ?? [],
+                    'payment' => $input['payment_method'],
+                ]]);
+            })
+            ->keepData()
+            ->end();
+    });
+
+    // Deep-links: a campaign URL can prefill the store and jump ahead.
+    if (!request()->ajax() && get('store')) {
+        $prefill = ['branch' => ['store' => get('store')]];
+
+        if (get('express') === '1' && get('product') && isset($this->products()[get('product')])) {
+            $price = $this->products()[get('product')];
+            $prefill['items'] = [
+                'quantity_' . get('product') => '1',
+                'totals' => [
+                    'subtotal' => $price,
+                    'items' => [get('product') => ['quantity' => 1, 'price' => $price]],
+                ],
+            ];
+
+            $this->wizard->jumpTo('buyer', $prefill);
+        } else {
+            $this->wizard->jumpTo('items', $prefill);
+        }
+    }
+}
+
+function onCartData()
+{
+    $data = $this->wizard->data();
+
+    if (empty($data['totals'])) {
+        return $this->wizard->redirectTo('branch');
+    }
+
+    return ['cart' => $data['totals'], 'store' => $data['stores'][$data['store'] ?? ''] ?? null];
+}
+
+function onRemoveItem()
+{
+    // Same pattern as the wizard-shop theme's onRemoveProduct: the RAW
+    // quantity field is the source of truth (a revalidating step would
+    // rebuild the derived totals from it), so the remove decrements the
+    // raw field and recomputes the derived cart. Empty cart: back to the
+    // first step (the sendFirstStep of the 1.x).
+    $product = post('product', '');
+
+    if (!isset($this->products()[$product])) {
+        return;
+    }
+
+    $data = $this->wizard->data();
+    $code = 'quantity_' . $product;
+    $data[$code] = (string) max(0, ((int) ($data[$code] ?? 1)) - 1);
+
+    $items = [];
+    $subtotal = 0;
+
+    foreach ($this->products() as $pcode => $price) {
+        $qty = (int) ($data['quantity_' . $pcode] ?? 0);
+
+        if ($qty < 1) {
+            continue;
+        }
+
+        $items[$pcode] = ['quantity' => $qty, 'price' => $price];
+        $subtotal += $qty * $price;
+    }
+
+    $data['totals'] = ['subtotal' => $subtotal, 'items' => $items];
+
+    $this->wizard->saveData([$code => $data[$code], 'totals' => $data['totals']], 'items');
+
+    if (empty($items)) {
+        return $this->wizard->redirectTo('branch');
+    }
+
+    return ['cart' => $data['totals']];
+}
+
+function onEnd()
+{
+    // Render guard: the review step needs a cart with data. onEnd is the
+    // place for it because onInit cannot redirect. Gotcha: after onRun the
+    // page variable "wizard" (an array) shadows the component — onEnd runs
+    // on GET renders AND on AJAX, so the access must go through
+    // components['wizard'].
+    $wizard = $this->components['wizard'];
+
+    if ($this->param('step') === 'review' && empty($wizard->data()['totals'])) {
+        return $wizard->redirectTo('branch');
+    }
+}
+?>
+==
+{% component 'wizard' %}
+{% if wizard.stepNumber == 2 %}
+<div id="cart-box">
+    <span id="cart-subtotal">{{ wizard.data.totals.subtotal }}</span>
+</div>
+{% endif %}

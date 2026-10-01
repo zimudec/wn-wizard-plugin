@@ -1,0 +1,40 @@
+url = "/level-retain-builder/:step?"
+title = "Level Retain Builder"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([['name' => 'field1', 'label' => 'Field 1']])
+            ->rules(['field1' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([['name' => 'field2', 'label' => 'Field 2']])
+            ->rules(['field2' => 'required'])
+            ->end()
+
+            // A third step, so submitting step 2 does not finish the wizard
+            // (a finished wizard restarts on the next interaction).
+            ->step('step-3', 'Step 3')
+            ->fields([['name' => 'field3', 'label' => 'Field 3']])
+            ->rules(['field3' => 'required'])
+            ->end()
+
+            // Wizard-wide settings declared from the page. Before round 42
+            // this was unreachable: the builder had no method for it and the
+            // component property was not read once define() was used.
+            ->retainData();
+    });
+}
+?>
+==
+{% component 'wizard' %}

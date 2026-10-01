@@ -1,0 +1,7 @@
+{# Dispatches to the partial of the field type; a field with no type
+   renders as text. #}
+{% if field.type == 'select' %}
+    {% partial '@field_select.htm' field=field value=value %}
+{% else %}
+    {% partial '@field_text.htm' field=field value=value %}
+{% endif %}

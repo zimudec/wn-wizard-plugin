@@ -1,0 +1,7 @@
+# Keep the shipped package lean: development files are excluded from the
+# dist archives that Packagist and the GitHub tag archives generate.
+/tests export-ignore
+phpunit.xml export-ignore
+phpcs.xml export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore

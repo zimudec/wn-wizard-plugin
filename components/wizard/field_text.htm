@@ -1,0 +1,15 @@
+{# Text field of a wizard step. Snowboard's FormValidation fills the bag
+   below; see docs/standards.md for the ARIA contract. #}
+<div class="wizard__field">
+    <label class="wizard__label" for="{{ field.name }}">{{ field.label }}</label>
+
+    <input class="wizard__input"
+           type="text"
+           id="{{ field.name }}"
+           name="{{ field.name }}"
+           value="{{ value }}"
+           aria-describedby="{{ field.name }}-error"
+           {% for name, attributeValue in field.attributes %}{{ name }}="{{ attributeValue }}" {% endfor %}>
+
+    <div class="wizard__error" id="{{ field.name }}-error" role="alert" data-validate-error="{{ field.name }}" data-validate-for="{{ field.name }}"></div>
+</div>

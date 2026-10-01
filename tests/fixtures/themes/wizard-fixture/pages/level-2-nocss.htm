@@ -1,0 +1,35 @@
+url = "/level-2-nocss/:step?"
+title = "Level 2 without the stylesheet"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+css = 0
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+/**
+ * The same step view as level-2, with the plugin's stylesheet switched off.
+ * The wrapper element still renders: it is the root of the component's own
+ * markup, not a styling courtesy, and an unstyled wrapper is inert.
+ */
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([
+                ['name' => 'field1', 'label' => 'Field 1'],
+            ])
+            ->rules(['field1' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->view('custom-step')
+            ->end();
+    });
+}
+?>
+==
+{% component 'wizard' %}

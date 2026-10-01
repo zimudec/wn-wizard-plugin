@@ -1,0 +1,7 @@
+.phpunit.result.cache
+.phpunit.cache/
+.phpunit.result.cache.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

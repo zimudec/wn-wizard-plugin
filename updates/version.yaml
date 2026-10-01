@@ -23,3 +23,29 @@
     - Each wizard has their own session, to prevent one from stepping on the other
 1.0.7:
     - Correction overwriting session from extra_validation, when revalidating all previous steps
+2.0.0:
+    - !!! New configuration API with three levels over a single core: component properties (no code), declarative page builder and full control (PHP 8.2+, Winter CMS 1.2+)
+    - One generic submit handler (wizard::onNext); per-page handlers removed — the rules come from the step in the URL
+    - Session state namespaced per page and component alias, so two wizards never share state; user data separated from metadata and the view templates only ever see user data
+    - Server-side gating of unreachable steps; revalidateOnSubmit revalidates the previous steps on submit only and revalidate also gates the entry; neither runs unless a step declares it
+    - Graceful bounce of a failed revalidation back to the first incomplete step; robust step-boundary resolution
+    - Double-submission guard in the built-in script — no second request while one is in flight, no disabled buttons, aria-busy on the form, unlocked on every outcome including a cancelled request
+    - Session and navigation API for auxiliary AJAX handlers (data, stepsData, stepData, meta, stepCurrent, saveData, forgetData, requireData, flush, redirectTo, jumpTo)
+    - forgetData removes named keys from a step, or from every step when no step is given
+    - requireData guards an auxiliary handler and returns its data in one call
+    - needsRedirect tells a handler which of the two it got
+    - Deep-link entries preserve the query string across the internal redirect
+    - Sliding 30-minute inactivity TTL (configurable, disablable); wipe-on-back by default with retainData for an editable stepper
+    - keepSteps(['step']) keeps the data of the steps you name when the user goes back, and still clears every other later step
+    - The wizard-wide settings are settable from the builder (->ttl(), ->wipeOnBack(), ->retainData(), ->encrypted(), ->keepSteps()); a setting the page leaves alone falls back to the component property
+    - Data cleared on finish (keepData or retainData defers it); opt-in encryption of the persisted data
+    - Field whitelisting: each step persists only its rule keys and its declared fields. Uploaded files are never serialized. A rule on a parent key covers everything under it only while no rule is declared inside it
+    - Step pages answer Cache-Control: no-store, so the values a user typed stay out of the browser cache and history
+    - Level 0 fields are persisted and re-filled on return, without gaining any validation rule
+    - Snowboard-first frontend with no jQuery; framework-native redirects and validation exceptions; assets through the Asset Combiner (fingerprinted, cached, minified in production, defer)
+    - Accessible step indicator, error focus script and GOV.UK-style error summary; custom step views and theme partial overrides
+    - Per-step validation messages and app-level lang overrides; translated strings (en, es, fr); translated exceptions for invalid configuration
+    - Cycle events for other plugins (wizard.beforeValidate, wizard.afterCommit, wizard.stepCompleted) — afterCommit fires before the step is persisted, stepCompleted after it
+    - Test suite: unit and acceptance tests of the three configuration levels (fixture themes included)
+    - Documentation rebuilt on the architecture and conventions of the Laravel documentation, with a master index grouped by progression, one topic per page and typed callouts
+    - The documentation's commit example read the derived cart from the wrong argument, and four pages described revalidation as a default instead of a declaration

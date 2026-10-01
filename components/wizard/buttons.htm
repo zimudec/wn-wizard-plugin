@@ -1,0 +1,13 @@
+{# On the last step the submit button completes the wizard server-side and
+   lands on the finish URL (default "/"). #}
+<div class="wizard__buttons">
+    {% if wizard.urls.prev %}
+        <a class="wizard__button wizard__button--prev" href="{{ wizard.urls.prev }}">
+            {{ 'zimudec.wizard::lang.buttons.previous' | trans }}
+        </a>
+    {% endif %}
+
+    <button type="submit" class="wizard__button {{ wizard.urls.next ? 'wizard__button--next' : 'wizard__button--finish' }}" data-attach-loading>
+        {{ wizard.urls.next ? ('zimudec.wizard::lang.buttons.next' | trans) : ('zimudec.wizard::lang.buttons.finish' | trans) }}
+    </button>
+</div>

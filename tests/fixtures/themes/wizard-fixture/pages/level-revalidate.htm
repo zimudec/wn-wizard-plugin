@@ -1,0 +1,36 @@
+url = "/level-revalidate/:step?"
+title = "Level Revalidate"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([
+                ['name' => 'field1', 'label' => 'Field 1'],
+            ])
+            ->rules(['field1' => 'required'])
+            ->extraValidation(function ($validator, $data) {
+                return ['derived' => $data['field1'] . '-derived'];
+            })
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([
+                ['name' => 'field2', 'label' => 'Field 2'],
+            ])
+            ->rules(['field2' => 'required'])
+            ->revalidate()
+            ->end();
+    });
+}
+?>
+==
+{% component 'wizard' %}

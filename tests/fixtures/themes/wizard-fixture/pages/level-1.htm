@@ -1,0 +1,33 @@
+url = "/level-1/:step?"
+title = "Level 1"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([
+                ['name' => 'field1', 'label' => 'Field 1'],
+                ['name' => 'field2', 'type' => 'select', 'label' => 'Field 2', 'options' => ['a' => 'Option A', 'b' => 'Option B']],
+            ])
+            ->rules(['field1' => 'required', 'field2' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([
+                ['name' => 'field3', 'label' => 'Field 3'],
+            ])
+            ->rules(['field3' => 'required'])
+            ->end();
+    });
+}
+?>
+==
+{% component 'wizard' %}

@@ -1,0 +1,46 @@
+url = "/level-keep-steps/:step?"
+title = "Level Keep Steps"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([['name' => 'field1', 'label' => 'Field 1']])
+            ->rules(['field1' => 'required'])
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([['name' => 'field2', 'label' => 'Field 2']])
+            ->rules(['field2' => 'required'])
+            ->end()
+
+            ->step('step-3', 'Step 3')
+            ->fields([['name' => 'field3', 'label' => 'Field 3']])
+            ->rules(['field3' => 'required'])
+            ->end()
+
+            // A fourth step, so submitting step 3 does not finish the wizard
+            // (a finished wizard clears the session and restarts).
+            ->step('step-4', 'Step 4')
+            ->fields([['name' => 'field4', 'label' => 'Field 4']])
+            ->rules(['field4' => 'required'])
+            ->end()
+
+            // Step 2 is the one the flow needs (the rows of a grid it
+            // re-reads); step 3 still holds data the user should not see
+            // again. Declaring it here replaces the workaround of writing a
+            // copy of the data into step 1 to keep it alive.
+            ->keepSteps(['step-2']);
+    });
+}
+?>
+==
+{% component 'wizard' %}

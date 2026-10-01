@@ -1,0 +1,6 @@
+{# Theme override of the text field partial (convention:
+   partials/wizard/field_<type>.htm). #}
+<div class="theme-override-text-field">
+    <label for="{{ field.name }}">{{ field.label }}</label>
+    <input type="text" id="{{ field.name }}" name="{{ field.name }}" value="{{ value }}">
+</div>

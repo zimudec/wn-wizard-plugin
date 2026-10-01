@@ -1,0 +1,49 @@
+url = "/level-2/:step?"
+title = "Level 2"
+layout = "default"
+is_hidden = 0
+
+[wizard]
+==
+<?
+use Zimudec\Wizard\Support\Builder as WizardBuilder;
+
+function onInit()
+{
+    $this->wizard->define(function (WizardBuilder $builder) {
+        $builder
+            ->step('step-1', 'Step 1')
+            ->fields([
+                ['name' => 'field1', 'label' => 'Field 1'],
+            ])
+            ->rules(['field1' => 'required'])
+            ->extraValidation(function ($validator, $data) {
+                if (($data['field1'] ?? '') === 'forbidden') {
+                    $validator->errors()->add('field1', 'Extra validation failed');
+                }
+
+                return ['derived_mark' => 'from-extra-validation'];
+            })
+            ->commit(function ($data, $previous) {
+                // Fixture del contrato de los DOS argumentos del hook commit:
+                // el primero es este paso con sus derivados, el segundo es el
+                // acumulado de los pasos anteriores. Ver WizardEventsTest.
+                session(['level2_commit_args' => ['current' => $data, 'previous' => $previous]]);
+            })
+            ->handler(function ($input, $data) {
+                session(['level2_handler_ran' => true]);
+            })
+            ->end()
+
+            ->step('step-2', 'Step 2')
+            ->fields([
+                ['name' => 'field2', 'label' => 'Field 2'],
+            ])
+            ->rules(['field2' => 'required'])
+            ->view('custom-step')
+            ->end();
+    });
+}
+?>
+==
+{% component 'wizard' %}

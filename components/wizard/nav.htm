@@ -1,0 +1,18 @@
+{# Step indicator, following the W3C WAI multi-page forms tutorial.
+   Completed steps become links only with data retention on; without it the
+   stepper is not editable. #}
+<nav class="wizard__nav" aria-label="{{ 'zimudec.wizard::lang.nav.steps' | trans }}">
+    <ol class="wizard__nav-list">
+        {% for step in wizard.steps %}
+            <li class="wizard__nav-item wizard__nav-item--{{ step.state }}"
+                {% if step.state == 'current' %}aria-current="step"{% endif %}>
+                {% if step.state == 'completed' %}<span class="wizard__sr-only">{{ 'zimudec.wizard::lang.nav.completed' | trans }}: </span>{% elseif step.state == 'current' %}<span class="wizard__sr-only">{{ 'zimudec.wizard::lang.nav.current' | trans }}: </span>{% endif %}
+                {% if wizard.retainData and step.state != 'pending' %}
+                    <a class="wizard__nav-link" href="{{ step.url }}">{{ step.title }}</a>
+                {% else %}
+                    <span class="wizard__nav-label">{{ step.title }}</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+</nav>
