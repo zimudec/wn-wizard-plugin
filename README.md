@@ -5,6 +5,8 @@ configuration, per-step validation, and a privacy-first session store. No build 
 jQuery, no Bootstrap — the framework serves the fingerprinted assets and the stylesheet sits
 in a CSS cascade layer your theme can override.
 
+<img width="770" height="403" alt="Captura de pantalla_2026-09-30_23-23-43" src="https://github.com/user-attachments/assets/5ee44f5d-9c3f-4558-862c-01b3be5e335d" />
+
 ## Requirements
 
 - PHP 8.2 or higher
