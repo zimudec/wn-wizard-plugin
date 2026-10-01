@@ -17,12 +17,8 @@
         {
             "name": "Héctor Pavez",
             "email": "hectzimudec@gmail.com",
-            "role": "Original Author"
-        },
-        {
-            "name": "zimudec",
             "homepage": "https://github.com/zimudec",
-            "role": "Maintainer"
+            "role": "Original Author"
         }
     ],
     "support": {
