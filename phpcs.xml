@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="zimudec Wizard">
+    <description>The coding standard for the zimudec/wizard plugin (PSR-2 per the Winter CMS developer guide, enforced via the closest bundled standard; PSR-12).</description>
+    <rule ref="PSR12">
+        <!-- Winter CMS developer guide exceptions (winter/phpcs.xml) -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
+        <exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace" />
+        <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
+        <exclude name="Generic.Files.LineLength" />
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <!-- Test fixtures and cases do not need a namespace defined -->
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <!-- Test fixtures and cases can have multiple classes defined -->
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <arg name="extensions" value="php" />
+    <arg name="colors" />
+
+    <file>components/</file>
+    <file>support/</file>
+    <file>Plugin.php</file>
+    <file>tests/</file>
+
+    <!-- Ignore vendor files -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+</ruleset>
